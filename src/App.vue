@@ -1,10 +1,10 @@
 <script setup lang="ts">
-  import HelloWorld from "./components/HelloWorld.vue";
+  import Scarecrow from "./components/Scarecrow.vue";
 </script>
 
 <template>
   <Suspense>
-    <HelloWorld></HelloWorld>
+    <Scarecrow></Scarecrow>
   </Suspense>
 </template>
 

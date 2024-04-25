@@ -1,7 +1,12 @@
 class CameraHelper {
-  public constraints: MediaStreamConstraints = {};
+  public constraints: MediaStreamConstraints | any;
   public devices: MediaDeviceInfo[] = [];
   public stream: MediaStream = new MediaStream();
+  private isFacingEnviroment = true;
+
+  public constructor() {
+    this.constraints = this.getDefaultMediaStreamConstraints();
+  }
 
   public setupAsync = async () => {
     if (this.checkCompatibility()) {
@@ -13,7 +18,7 @@ class CameraHelper {
 
   //get default constraints
   private getDefaultMediaStreamConstraints = () => {
-    const constraints: MediaStreamConstraints = {
+    const constraints = {
       video: {
         width: { min: 1280, max: 1920 },
         height: { min: 720, max: 1080 },
@@ -35,7 +40,7 @@ class CameraHelper {
   };
 
   public specifyDeviceID = async (deviceId: number) => {
-    if (this.constraints.video?.deviceId) {
+    if (this.constraints.video.deviceId) {
       this.constraints.video.deviceId.exact = deviceId;
     } else {
       this.constraints = {
@@ -46,6 +51,15 @@ class CameraHelper {
           },
         },
       };
+    }
+    await this.getStream();
+  };
+
+  public changeFacingDirection = async () => {
+    if (this.isFacingEnviroment) {
+      this.constraints.video.facingMode.exact = "user";
+    } else {
+      this.constraints.video.facingMode.exact = "environment";
     }
     await this.getStream();
   };
