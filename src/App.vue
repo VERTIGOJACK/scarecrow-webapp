@@ -4,25 +4,18 @@
 
 <template>
   <Suspense>
-    <Scarecrow></Scarecrow>
+    <div class="container rainbow-border">
+      <Scarecrow></Scarecrow>
+    </div>
   </Suspense>
 </template>
 
 <style scoped>
-  video {
-    width: 100px;
-    height: 100px;
-  }
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.vue:hover {
-    filter: drop-shadow(0 0 2em #42b883aa);
+  .container {
+    padding: var(--lengths-sm-4);
+    border-radius: var(--lengths-sm-4);
+    filter: var(--common-shadow);
+    background-color: var(--monochrome-1);
+
   }
 </style>

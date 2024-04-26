@@ -1,16 +1,67 @@
+@import url("https://fonts.googleapis.com/css2?family=Abel&family=Junge&family=Liu+Jian+Mao+Cao&family=Luckiest+Guy&family=Poppins&display=swap");
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* lengths sm*/
+  --lengths-sm-1: 2px;
+  --lengths-sm-2: 4px;
+  --lengths-sm-3: 8px;
+  --lengths-sm-4: 10px;
+  /*lengths md*/
+  --lengths-md-2: 16px;
+  --lengths-md-3: 24px;
+  --lengths-md-3: 32px;
+  /* lengths lg */
+  --lengths-lg-1: 100px;
+  --lengths-lg-2: 250px;
+  --lengths-lg-3: 500px;
+  /* fonts */
+  --font1: "Junge", serif;
+  --font2: "Liu Jian Mao Cao", cursive;
+  --font3: "Luckiest Guy", cursive;
+  --font4: "Poppins", sans-serif;
+  --font5: sans-serif;
+  /* accent colors */
+  --accent-1: #81bec3;
+  --accent-2: #e5a8a8;
+  --accent-3: #f9ddab;
+  /* main base mono color */
+  --monochrome-1: white;
+  --monochrome-2: #edf0f2;
+  --monochrome-3: #6b6e70;
+  --monochrome-4: #474b4f;
+  --monochrome-5: black;
+  /* transparent black */
+  --transparent-25: rgba(0, 0, 0, 0.25);
+  --common-shadow: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.5));
+  --outline-shadow: drop-shadow(0px 0px 1px rgba(0, 0, 0, 0.5));
+
+  --custom-gradient: linear-gradient(
+      to top left,
+      transparent,
+      rgba(255, 153, 150, 0),
+      var(--accent-1)
+    ),
+    linear-gradient(
+        to top right,
+        transparent,
+        rgba(255, 153, 150, 0),
+        var(--accent-2)
+      )
+      var(--accent-3);
+
+  --loading-width: 2000px;
+  --loading-speed: 1s;
+
+  font-family: var(--font4);
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--color-palette-4);
+  background-color: var(--color-palette-3);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
 }
 
 a {
@@ -28,6 +79,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background: var(--custom-gradient);
 }
 
 h1 {
@@ -58,22 +110,29 @@ button:focus-visible {
   padding: 2em;
 }
 
+.rainbow-border {
+  box-shadow: 0 0 0 var(--lengths-sm-3) var(--accent-1),
+    0 0 0 calc(var(--lengths-sm-3) * 2) var(--accent-2),
+    0 0 0 calc(var(--lengths-sm-3) * 3) var(--accent-3);
+}
+
+.loading {
+  opacity: 0.2;
+  border-radius: var(--lengths-sm-1);
+  background: linear-gradient(90deg, gray, lightgray, gray);
+  background-size: var(--loading-width) auto;
+  animation: loadscroll linear infinite var(--loading-speed);
+  user-select: none;
+}
+
+.loading,
+.loading * {
+  color: transparent;
+}
+
 #app {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
 }

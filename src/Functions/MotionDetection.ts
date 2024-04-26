@@ -7,7 +7,14 @@ class MotionDetection {
   private height = 150;
   private motionSamplesCount = 0;
 
+  private colorIndex = 0;
   private previousFrame: number[] = [];
+
+  private loopColor() {
+    const colors = ["#81bec3", "#e5a8a8", "#f9ddab"];
+    const fetchedColor = colors[this.colorIndex];
+    return fetchedColor;
+  }
 
   private RGBAverage(r: number, g: number, b: number) {
     return (r + g + b) / 3;
@@ -43,13 +50,13 @@ class MotionDetection {
         var b = data[pos + 2];
 
         // draw the pixels as blocks of colours, if difference from last frame bigger than threshold,
-        // draw pixel as red color and play sound, otherwise draw normally
+        // draw pixel as solid color and play sound, otherwise draw normally
         if (
           this.previousFrame[pos] &&
           Math.abs(this.previousFrame[pos] - this.RGBAverage(r, g, b)) >
             this.threshold
         ) {
-          ctx.fillStyle = `rgb(${255},${0},${0})`;
+          ctx.fillStyle = this.loopColor();
           ctx.fillRect(x, y, this.sampleSize, this.sampleSize);
           this.motionSamplesCount++;
         } else {
@@ -66,6 +73,11 @@ class MotionDetection {
       audio.play();
     }
     this.motionSamplesCount = 0;
+    if (this.colorIndex >= 2) {
+      this.colorIndex = 0;
+    } else {
+      this.colorIndex++;
+    }
   };
 }
 

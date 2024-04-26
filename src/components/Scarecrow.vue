@@ -93,22 +93,26 @@
   <div class="vertical-layout">
     <video ref="video" autoplay hidden></video>
     <canvas ref="canvas"></canvas>
-    <select
-      @input="async (event: any) => await updateCamera(event.target.value)">
-      <option
-        v-for="device in deviceList"
-        :label="device.label"
-        :value="device.deviceId"></option>
-    </select>
+    <label class="horizontal-spacing"
+      >Source:
+      <select
+        @input="async (event: any) => await updateCamera(event.target.value)">
+        <option
+          v-for="device in deviceList"
+          :label="device.label"
+          :value="device.deviceId"></option>
+      </select>
+    </label>
+
     <div class="vertical-layout">
-      <label>
+      <label class="horizontal-spacing">
         Fps
         <input
           type="number"
           v-model="fps"
           @input="(event: any) => setFps(event.target.value)" />
       </label>
-      <label>
+      <label class="horizontal-spacing">
         Threshold: {{ threshold }}
         <input
           type="range"
@@ -117,7 +121,7 @@
           max="255"
           @input="setThreshold()" />
       </label>
-      <label>
+      <label class="horizontal-spacing">
         Sensitivity:
         <input
           type="number"
@@ -132,6 +136,7 @@
 
 <style scoped>
   .vertical-layout {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -141,6 +146,13 @@
     display: flex;
     flex-direction: row;
   }
+
+  .horizontal-spacing {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
   canvas {
     width: 100%;
   }
