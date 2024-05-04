@@ -1,7 +1,9 @@
 <script setup lang="ts">
-  import { ref, onMounted } from "vue";
+  import { ref, watch, onMounted } from "vue";
+
   import CameraHelper from "../Functions/CameraHelper";
-  import audioFile from "../assets/birdsound.mp3";
+  import audioFile from "../assets/5to8khz.mp3";
+  import audiofile2 from "../assets/1to5khz.mp3";
   import MotionDetection from "../Functions/MotionDetection";
   import Spinner from "./Spinner.vue";
 
@@ -14,6 +16,22 @@
   const cameraHelper = new CameraHelper();
   const motionDetection = new MotionDetection();
   const isMobileClient = ref(false);
+
+  const soundPicked = ref<string>("High");
+
+  watch(soundPicked, async (newV, oldV) => {
+    //first pause running audio
+    audio.value.pause();
+
+    if (newV != oldV) {
+      const file = newV == "High" ? audioFile : audiofile2;
+      audio.value = new Audio(file);
+    }
+
+    //prepare audio for first run
+    audio.value.currentTime = 0;
+    audio.value.pause();
+  });
 
   const fps = ref<number>(0);
   const threshold = ref<number>(0);
@@ -90,7 +108,6 @@
       loaded.value = true;
     }
   };
-
 </script>
 
 <template>
@@ -100,8 +117,7 @@
     <Spinner class="center" v-else></Spinner>
     <label class="horizontal-spacing"
       >Source:
-      <select 
-        @input="async (event: any) => await updateCameraId(event.target.value)">
+      <select @input="async (event: any) => await updateCameraId(event.target.value)">
         <option
           v-for="device in deviceList"
           :label="device.label"
@@ -121,6 +137,14 @@
       <label class="horizontal-spacing">
         Sensitivity:
         <input type="number" v-model="sensitivity" min="0" max="255" @input="setSensitivity()" />
+      </label>
+      <label class="horizontal-spacing">
+        Sound:
+        <input type="radio" id="one" value="High" v-model="soundPicked" />
+        <label for="one">Hi</label>
+
+        <input type="radio" id="two" value="Low" v-model="soundPicked" />
+        <label for="two">Low</label>
       </label>
     </div>
   </div>
