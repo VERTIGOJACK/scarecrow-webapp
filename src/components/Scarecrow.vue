@@ -91,14 +91,6 @@
     }
   };
 
-  const updateCameraFlip = async () => {
-    if (video.value != null) {
-      loaded.value = false;
-      await cameraHelper.changeFacingDirection();
-      video.value.srcObject = cameraHelper.stream;
-      loaded.value = true;
-    }
-  };
 </script>
 
 <template>
@@ -106,18 +98,15 @@
     <video ref="video" autoplay hidden></video>
     <canvas ref="canvas" v-if="loaded"></canvas>
     <Spinner class="center" v-else></Spinner>
-    <!---else add spinner-->
     <label class="horizontal-spacing"
       >Source:
-      <select
-        v-if="!isMobileClient"
+      <select 
         @input="async (event: any) => await updateCameraId(event.target.value)">
         <option
           v-for="device in deviceList"
           :label="device.label"
           :value="device.deviceId"></option>
       </select>
-      <input type="button" value="flip" @click="async () => await updateCameraFlip()" />
     </label>
 
     <div class="vertical-layout">

@@ -7,7 +7,7 @@ class CameraHelper {
   public mobileClient = false;
 
   private supportedConstraints: MediaTrackSupportedConstraints;
-  private isFacingUser = false;
+  private isFacingUser = true;
 
   public constructor() {
     //read all supported constraints for video
@@ -26,9 +26,10 @@ class CameraHelper {
     };
 
     // if on mobile and supported, add facingMode
-    if (this.mobileClient && this.supportedConstraints.facingMode) {
-      videoConstraints.facingMode = { exact: "environment" };
-    }
+    //if (this.mobileClient && this.supportedConstraints.facingMode) {
+    //  videoConstraints.facingMode = undefined;
+    //  videoConstraints.facingMode = { exact: "environment" };
+    //}
 
     return videoConstraints;
   };
@@ -43,6 +44,9 @@ class CameraHelper {
 
   //get permissions and assign media stream
   private getStream = async () => {
+    if (this.stream) {
+      this.stream.getTracks().forEach((track) => track.stop());
+    }
     const stream = await navigator.mediaDevices.getUserMedia(this.constraints);
     this.stream = stream;
   };
@@ -64,22 +68,6 @@ class CameraHelper {
       this.constraints.video = videoConstraints;
     }
     await this.getStream();
-  };
-
-  public changeFacingDirection = async () => {
-    //type, null, and support checking
-    if (typeof this.constraints.video !== "boolean" && this.supportedConstraints.facingMode) {
-      //treat as interface
-      let videoConstraints: MediaTrackConstraints = this.constraints.video!;
-      //toggle
-      this.isFacingUser = !this.isFacingUser;
-      const direction = this.isFacingUser ? "user" : "environment";
-      //assign
-      videoConstraints.facingMode = { exact: direction };
-      this.constraints.video = videoConstraints;
-    }
-    await this.getStream();
-    console.log(this.constraints);
   };
 
   //checks for compatibility with getusermedia API
