@@ -73,9 +73,9 @@ class CameraHelper {
       let videoConstraints: MediaTrackConstraints = this.constraints.video!;
       //toggle
       this.isFacingUser = !this.isFacingUser;
-      const direction = this.isFacingUser ? undefined : "environment";
+      const direction = this.isFacingUser ? "user" : "environment";
       //assign
-      videoConstraints.facingMode = direction;
+      videoConstraints.facingMode = { exact: direction };
       this.constraints.video = videoConstraints;
     }
     await this.getStream();
