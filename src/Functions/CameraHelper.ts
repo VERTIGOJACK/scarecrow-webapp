@@ -79,6 +79,7 @@ class CameraHelper {
       this.constraints.video = videoConstraints;
     }
     await this.getStream();
+    console.log(this.constraints);
   };
 
   //checks for compatibility with getusermedia API

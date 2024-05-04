@@ -82,10 +82,21 @@
     drawLoop();
   });
 
-  const updateCamera = async (deviceId: number) => {
+  const updateCameraId = async (deviceId: number) => {
     if (video.value != null) {
+      loaded.value = false;
       await cameraHelper.specifyDeviceID(deviceId);
       video.value.srcObject = cameraHelper.stream;
+      loaded.value = true;
+    }
+  };
+
+  const updateCameraFlip = async () => {
+    if (video.value != null) {
+      loaded.value = false;
+      await cameraHelper.changeFacingDirection();
+      video.value.srcObject = cameraHelper.stream;
+      loaded.value = true;
     }
   };
 </script>
@@ -100,17 +111,13 @@
       >Source:
       <select
         v-if="!isMobileClient"
-        @input="async (event: any) => await updateCamera(event.target.value)">
+        @input="async (event: any) => await updateCameraId(event.target.value)">
         <option
           v-for="device in deviceList"
           :label="device.label"
           :value="device.deviceId"></option>
       </select>
-      <input
-        v-else
-        type="button"
-        value="flip"
-        @click="async () => await cameraHelper.changeFacingDirection()" />
+      <input type="button" value="flip" @click="async () => await updateCameraFlip()" />
     </label>
 
     <div class="vertical-layout">
