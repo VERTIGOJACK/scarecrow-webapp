@@ -4,9 +4,9 @@ class CameraHelper {
   public constraints: MediaStreamConstraints = { video: {} };
   public devices: MediaDeviceInfo[] = [];
   public stream: MediaStream = new MediaStream();
+  public mobileClient = false;
 
   private supportedConstraints: MediaTrackSupportedConstraints;
-  private mobileClient = false;
   private isFacingUser = false;
 
   public constructor() {

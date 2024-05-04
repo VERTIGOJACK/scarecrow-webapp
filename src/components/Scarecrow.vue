@@ -13,6 +13,7 @@
   const deviceList = ref<MediaDeviceInfo[]>([]);
   const cameraHelper = new CameraHelper();
   const motionDetection = new MotionDetection();
+  const isMobileClient = ref(false);
 
   const fps = ref<number>(0);
   const threshold = ref<number>(0);
@@ -49,9 +50,11 @@
     //set up cameras and video feed
     await cameraHelper.setupAsync();
 
+    //assign to refs
     if (video.value != null) {
       video.value.srcObject = cameraHelper.stream;
       deviceList.value = cameraHelper.devices;
+      isMobileClient.value = cameraHelper.mobileClient;
       loaded.value = true;
     }
 
@@ -95,12 +98,19 @@
     <!---else add spinner-->
     <label class="horizontal-spacing"
       >Source:
-      <select @input="async (event: any) => await updateCamera(event.target.value)">
+      <select
+        v-if="!isMobileClient"
+        @input="async (event: any) => await updateCamera(event.target.value)">
         <option
           v-for="device in deviceList"
           :label="device.label"
           :value="device.deviceId"></option>
       </select>
+      <input
+        v-else
+        type="button"
+        value="flip"
+        @input="async () => await cameraHelper.changeFacingDirection()" />
     </label>
 
     <div class="vertical-layout">
