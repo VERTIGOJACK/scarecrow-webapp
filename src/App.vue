@@ -3,11 +3,11 @@
 </script>
 
 <template>
-  <Suspense>
-    <div class="container rainbow-border">
+  <div class="container rainbow-border">
+    <Suspense>
       <Scarecrow></Scarecrow>
-    </div>
-  </Suspense>
+    </Suspense>
+  </div>
 </template>
 
 <style scoped>
@@ -16,6 +16,5 @@
     border-radius: var(--lengths-sm-4);
     filter: var(--common-shadow);
     background-color: var(--monochrome-1);
-
   }
 </style>

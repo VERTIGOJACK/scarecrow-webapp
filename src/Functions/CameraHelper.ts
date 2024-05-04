@@ -1,30 +1,50 @@
+import { isMobileClient } from "./DetectMobileBrowsers";
+
 class CameraHelper {
-  public constraints: MediaStreamConstraints | any;
+  public constraints: MediaStreamConstraints = { video: {} };
   public devices: MediaDeviceInfo[] = [];
   public stream: MediaStream = new MediaStream();
-  private isFacingEnviroment = true;
+
+  private supportedConstraints: MediaTrackSupportedConstraints;
+  private mobileClient = false;
+  private isFacingUser = false;
 
   public constructor() {
-    this.constraints = this.getDefaultMediaStreamConstraints();
+    //read all supported constraints for video
+    //check if on mobile client
+    //then get default options
+    this.supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
+    this.mobileClient = isMobileClient();
+    this.constraints.video = this.getDefaultMediaStreamConstraints();
   }
+
+  //get default constraints
+  private getDefaultMediaStreamConstraints = (): MediaTrackConstraints => {
+    const videoConstraints: MediaTrackConstraints = {
+      width: { min: 1280, max: 1920 },
+      height: { min: 720, max: 1080 },
+    };
+
+    // if on mobile and supported, add facingMode
+    if (this.mobileClient && this.supportedConstraints.facingMode) {
+      videoConstraints.facingMode = { exact: "environment" };
+    }
+
+    return videoConstraints;
+  };
 
   public setupAsync = async () => {
     if (this.checkCompatibility()) {
-      this.constraints = this.getDefaultMediaStreamConstraints();
-      await this.getCameraList();
+      //getting stream involves permissions, hence comes first
       await this.getStream();
+      await this.getCameraList();
     }
   };
 
-  //get default constraints
-  private getDefaultMediaStreamConstraints = () => {
-    const constraints = {
-      video: {
-        width: { min: 1280, max: 1920 },
-        height: { min: 720, max: 1080 },
-      },
-    };
-    return constraints;
+  //get permissions and assign media stream
+  private getStream = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia(this.constraints);
+    this.stream = stream;
   };
 
   //return list of videoinputdevices
@@ -32,54 +52,38 @@ class CameraHelper {
     //get all devices
     const devices = await navigator.mediaDevices.enumerateDevices();
     //filter all devices into those recognized as videoinput
-    const videoDevices = devices.filter(
-      (device) => device.kind === "videoinput"
-    );
+    const videoDevices = devices.filter((device) => device.kind === "videoinput");
     //return list
     this.devices = videoDevices;
   };
 
   public specifyDeviceID = async (deviceId: number) => {
-    if (this.constraints.video.deviceId) {
-      this.constraints.video.deviceId.exact = deviceId;
-    } else {
-      this.constraints = {
-        video: {
-          ...this.constraints.video,
-          deviceId: {
-            exact: deviceId,
-          },
-        },
-      };
+    if (typeof this.constraints.video !== "boolean") {
+      let videoConstraints: MediaTrackConstraints = this.constraints.video!;
+      videoConstraints.deviceId = { exact: deviceId.toString() };
+      this.constraints.video = videoConstraints;
     }
     await this.getStream();
   };
 
   public changeFacingDirection = async () => {
-    if (this.isFacingEnviroment) {
-      this.constraints.video.facingMode.exact = "user";
-    } else {
-      this.constraints.video.facingMode.exact = "environment";
+    //type, null, and support checking
+    if (typeof this.constraints.video !== "boolean" && this.supportedConstraints.facingMode) {
+      //treat as interface
+      let videoConstraints: MediaTrackConstraints = this.constraints.video!;
+      //toggle
+      this.isFacingUser = !this.isFacingUser;
+      const direction = this.isFacingUser ? "user" : "environment";
+      //assign
+      videoConstraints.facingMode = direction;
+      this.constraints.video = videoConstraints;
     }
     await this.getStream();
   };
 
-  //assign media stream
-  private getStream = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia(this.constraints);
-    this.stream = stream;
-  };
-
   //checks for compatibility with getusermedia API
   private checkCompatibility = (): boolean => {
-    if (
-      "mediaDevices" in navigator &&
-      "getUserMedia" in navigator.mediaDevices
-    ) {
-      return true;
-    } else {
-      return false;
-    }
+    return "mediaDevices" in navigator && "getUserMedia" in navigator.mediaDevices ? true : false;
   };
 }
 

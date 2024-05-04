@@ -3,6 +3,9 @@
   import CameraHelper from "../Functions/CameraHelper";
   import audioFile from "../assets/birdsound.mp3";
   import MotionDetection from "../Functions/MotionDetection";
+  import Spinner from "./Spinner.vue";
+
+  const loaded = ref(false);
 
   const video = ref<HTMLVideoElement | null>(null);
   const canvas = ref<HTMLCanvasElement | null>(null);
@@ -37,11 +40,7 @@
     setTimeout(function () {
       requestAnimationFrame(drawLoop);
       if (canvas.value != null && video.value != null) {
-        motionDetection.drawVideoOnCanvas(
-          video.value,
-          canvas.value.getContext("2d")!,
-          audio.value
-        );
+        motionDetection.drawVideoOnCanvas(video.value, canvas.value.getContext("2d")!, audio.value);
       }
     }, 1000 / fps.value);
   };
@@ -49,17 +48,16 @@
   onMounted(async () => {
     //set up cameras and video feed
     await cameraHelper.setupAsync();
+
     if (video.value != null) {
       video.value.srcObject = cameraHelper.stream;
       deviceList.value = cameraHelper.devices;
+      loaded.value = true;
     }
 
     //get canvas dimensions
     if (canvas.value) {
-      motionDetection.setCanvasDimensions(
-        canvas.value.width,
-        canvas.value.height
-      );
+      motionDetection.setCanvasDimensions(canvas.value.width, canvas.value.height);
     }
 
     //set up ref initial values
@@ -92,11 +90,12 @@
 <template>
   <div class="vertical-layout">
     <video ref="video" autoplay hidden></video>
-    <canvas ref="canvas"></canvas>
+    <canvas ref="canvas" v-if="loaded"></canvas>
+    <Spinner class="center" v-else></Spinner>
+    <!---else add spinner-->
     <label class="horizontal-spacing"
       >Source:
-      <select
-        @input="async (event: any) => await updateCamera(event.target.value)">
+      <select @input="async (event: any) => await updateCamera(event.target.value)">
         <option
           v-for="device in deviceList"
           :label="device.label"
@@ -107,34 +106,26 @@
     <div class="vertical-layout">
       <label class="horizontal-spacing">
         Fps
-        <input
-          type="number"
-          v-model="fps"
-          @input="(event: any) => setFps(event.target.value)" />
+        <input type="number" v-model="fps" @input="(event: any) => setFps(event.target.value)" />
       </label>
       <label class="horizontal-spacing">
         Threshold: {{ threshold }}
-        <input
-          type="range"
-          v-model="threshold"
-          min="0"
-          max="255"
-          @input="setThreshold()" />
+        <input type="range" v-model="threshold" min="0" max="255" @input="setThreshold()" />
       </label>
       <label class="horizontal-spacing">
         Sensitivity:
-        <input
-          type="number"
-          v-model="sensitivity"
-          min="0"
-          max="255"
-          @input="setSensitivity()" />
+        <input type="number" v-model="sensitivity" min="0" max="255" @input="setSensitivity()" />
       </label>
     </div>
   </div>
 </template>
 
 <style scoped>
+  .center {
+    display: flex;
+    width: 100%;
+    place-content: center;
+  }
   .vertical-layout {
     width: 100%;
     display: flex;
