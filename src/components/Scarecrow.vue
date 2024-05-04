@@ -110,7 +110,7 @@
         v-else
         type="button"
         value="flip"
-        @input="async () => await cameraHelper.changeFacingDirection()" />
+        @click="async () => await cameraHelper.changeFacingDirection()" />
     </label>
 
     <div class="vertical-layout">
